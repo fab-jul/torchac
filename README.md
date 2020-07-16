@@ -1,6 +1,16 @@
 # torchac: Fast Entropy Coding in PyTorch
 
-# _WIP: Code still lives in [L3C-Pytorch](https://github.com/fab-jul/L3C-PyTorch/tree/master/src/torchac)_
+---
+
+# _WIP: Code currently lives in [L3C-Pytorch](https://github.com/fab-jul/L3C-PyTorch/tree/master/src/torchac)_
+
+- [ ] Test with new PyTorch
+- [ ] would be nice to have a docker
+- [ ] setup code here
+- [ ] link to here from L3C
+- [ ] pip package would be sick
+
+---
 
 We implemented an entropy coding module as a C++ extension for PyTorch, because no existing fast Python entropy
  coding module was available.
