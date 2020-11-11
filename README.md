@@ -31,17 +31,19 @@ compliations and were tricky to get going.
 
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
-It is **not optimized**, however, it's much faster than doing the equivalent thing in pure-Python (because of all the
+While it could be further optimized, it is already much faster than doing the equivalent thing in pure-Python (because of all the
  bit-shifts etc.). In L3C, Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
  
 ## HowTo
 
 ### Set up conda environment
 
-This library has been tested with **PyTorch 1.7** and **Python 3.8**.
- Other versions also may work.
- All you need to run it is an environment with pytorch. If you don't have one,
- you can make one with `conda`:
+This library has been tested with
+- PyTorch 1.7
+- Python 3.8
+
+And that's all you need. Other versions also may work.
+If you don't have an environment setup, you can make one with `conda`:
 
 ```bash
 # We use Python 3.8, other version may be supported.
@@ -52,6 +54,8 @@ conda activate <YOUR_ENV_NAME>
 # Installing pytorch
 Find conda command for your system: https://pytorch.org
 ```
+
+#### Test installation
 
 To (optionally) test your installation, you need `pytest`:
 
