@@ -2,71 +2,159 @@
 
 ---
 
-# _WIP: Code currently lives in [L3C-Pytorch](https://github.com/fab-jul/L3C-PyTorch/tree/master/src/torchac)_
+## State: Pre-release
 
-- [ ] Test with new PyTorch
-- [ ] would be nice to have a docker
-- [ ] setup code here
+This is a simplified version of the arithmetic coder we used in the 
+neural compression paper "Practical Full Resolution Learned Lossless Image 
+Compression", which
+lives in the [L3C-Pytorch repo](https://github.com/fab-jul/L3C-PyTorch).
+In particular, we removed the L3C-specific parts, which relied on CUDA
+compliations and were tricky to get going.
+
+#### Steps for Release
+
+- [ ] Add a real-world test
+- [ ] Add a How To
+- [ ] Test with newest PyTorch
+- [ ] Document the needed packages / conda
+
+#### Nice to have
+
+- [ ] Docker container with all dependencies
+- [ ] pip package 
 - [ ] link to here from L3C
-- [ ] pip package would be sick
+- [ ] estimate bitrate from normalized CDF
 
 ---
 
-We implemented an entropy coding module as a C++ extension for PyTorch, because no existing fast Python entropy
- coding module was available.
+## About
 
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
 It is **not optimized**, however, it's much faster than doing the equivalent thing in pure-Python (because of all the
- bit-shifts etc.). Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
+ bit-shifts etc.). In L3C, Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
+ 
+## HowTo
 
-A good starting point for optimizing the code would probably be the [`range_coder.cc`](https://github.com/tensorflow/compression/blob/master/tensorflow_compression/cc/kernels/range_coder.cc)
-implementation of
-[TFC](https://tensorflow.github.io/compression/).
+### Set up conda environment
 
+_Upcoming_
 
-#### GPU and CPU support
+## FAQ
 
-The module can be built with or without CUDA. The only difference between the CUDA and non-CUDA versions is:
-With CUDA, `_get_uint16_cdf` from `torchac.py` is done with a simple/non-optimized CUDA kernel (`torchac_kernel.cu`),
-which has one benefit: we can directly write into shared memory! This saves an expensive copying step from GPU to CPU.
+- _Output is not equal to the input_: Either normalization gone wrong or
+specify a symbol that is `>Lp`.
 
-However, compiling with CUDA is probably a hassle. We tested with
-- GCC 5.5 and NVCC 9.0
-- GCC 7.4 and NVCC 10.1 (update 2)
-- _Did not work_: GCC 6.0 and NVCC 9
-Please comment if you have insights into which other configurations work (or don't.)
+## Important Implementation Details
 
-The main part (arithmetic coding), is always on CPU.
+### How we represent probability distributions.
 
-#### Compiling
+The probabilities are specified as [CDFs](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
+For each possible symbol,
+we need 2 CDF values. This means that if there are `L` possible symbols
+`{0, ..., L-1}`, the CDF must specified the value for `L+1` symbols~
 
-_Step 1_: Make sure a **recent `gcc` is available** in `$PATH` by running `gcc --version` (tested with version 5.5).
-If you want CUDA support, make sure `nvcc -V` gives the desired version (tested with nvcc version 9.0).
+**Example**:
+```
+Let's say we have L = 3 possible symbols. We need a CDF with 4 values
+to specify this:
 
-_Step 1b, macOS only_ (tested with 10.14): Set the following
-```bash
-export CC="clang++ -std=libc++"
-export MACOSX_DEPLOYMENT_TARGET=10.14
+symbol:        0     1     2
+cdf_val    C_0   C_1   C_2   C_3
+
+This corresponds to the 3 probabilities
+
+P(0) = C_1 - C_0
+P(1) = C_2 - C_1
+P(2) = C_3 - C_2
+
+NOTE: The arithmetic coder assumes that C_3 == 1. 
 ```
 
-_Step 2_:
- ```bash
- conda activate l3c_env
- cd src/torchac
- COMPILE_CUDA=auto python setup.py install
- ```
-- `COMPILE_CUDA=auto`: Use CUDA if a `gcc` between 5 and 6, and `nvcc` 9 is avaiable
-- `COMPILE_CUDA=force`: Use CUDA, don't check `gcc` or `nvcc`
-- `COMPILE_CUDA=no`: Don't use CUDA
+Important:
 
-This installs a package called `torchac-backend-cpu` or `torchac-backend-gpu` in your `pip`. 
-Both can be installed simultaneously. See also next subsection.
+- If you have `L` possible symbols, you need to pass a CDF that
+  specifies `L + 1` values. Since this is a common number, we call it 
+  `Lp = L + 1` throught the code (the "p" stands for prime, i.e., `L'`).
+- The last value of the CDF should be `1`. Note that the arithmetic coder
+  in `torchac.cpp` will just assume it's `1` regardless of what is passed, so not having a CDF
+  that ends in `1` will mean you will estimate bitrates wrongly. More details below.
+- Note that even though the CDF specifies `Lp` values, symbols are only allowed
+to be in `{0, ..., Lp-2}`. In the above example, `Lp == 4`, but the 
+max symbols is `Lp-2 == 2`. Bigger values will yield **wrong outputs**
 
-_Step 3_: To test if it works, you can do
-  ```
- conda activate l3c_env
- cd src/torchac
- python -c "import torchac"
- ```
-It should not print any error messages.
+### Expected input shapes
+
+We allow any shapes for the inputs, but the spatial dimensions of the
+input CDF and the input symbols must match. In particular, we expect:
+
+- CDF must have shape `(N1, ..., Nm, Lp)`, where `N1, ..., Nm` are the
+`m` spatial dimensions, and `Lp` is as described above.
+- Symbols must have shape `(N1, ..., Nm)`, i.e., same spatial dimensions
+as the CDF.
+
+For example, in a typical CNN, you might have a CDF of shape 
+`(batch, channels, height, width, Lp)`.
+
+  
+### Normalized vs. Unnormalized / Floating Point vs. Integer CDFs
+
+The library differentiates between "normalized" and "unnormalized" CDFs,
+and between "floating point" and "integer" CDFs. What do these mean?
+
+- A proper CDF is strictly monotonically increasing, and we call this a
+"normalized" CDF. 
+- However, since we work with finite precision (16 bits to
+be precise in this implementation), it may be that you have a CDF that
+is strictly monotonically increasing in `float32` space, but not when
+it is converted to 16 bit precision. An "unnormalized" CDF is what we call
+a CDF that has the same value for at least two subsequent elements.
+- "floating point" CDFs are CDFs that are specified as `float32` and need
+to be converted to 16 bit precision
+- "integer" CDFs are CDFs specified as `int16` - BUT are then interpreted
+as `uint16` on the C++ side. See "int16 vs uint16" below.
+
+Examples:
+
+```python
+float_unnormalized_cdf = [0.1, 0.2, 0.2, 0.3, ..., 1.]
+float_normalized_cdf = [0.1, 0.2, 0.20001, 0.3, ..., 1.]
+integer_unnormalized_cdf = [10, 20, 20, 30, ..., 0]  # See below for why last is 0.
+integer_normalized_cdf = [10, 20, 21, 30, ..., 0]    # See below for why last is 0.
+```
+
+There are two APIs:
+
+- `encode_float_cdf` and `decode_float_cdf` is to be used for floating point 
+CDFs. These functions have a flag `needs_normalization` that specifies
+whether the input is assumed to be normalized. You can set
+`need_normalization=False` if you have CDFs that you know are normalized, e.g., 
+Gaussian distributions with a large enough sigma. This would then speedup
+encoding and decoding large tensors somewhat, and will make bitrate 
+estimation from the CDF more precise.
+- `encode_int16_normalized_cdf` and `decode_int16_normalized_cdf` is to be 
+used for integer CDFs **that are already normalized**.
+
+### int16 vs uint16 - it gets confusing!
+
+One big source of confusion can be that PyTorch does not support `uint16`.
+Yet, that's exactly what we need. So what we do is we just represent
+integer CDFs with `int16` in the Python side, and interpret/cast them to `uint16`
+on the C++ side. This means that if you were to look at the int16 CDFs
+you would see confusing things:
+
+```python 
+# Python
+cdf_float = [0., 1/3, 2/3, 1.]  # A uniform distribution for L=3 symbols.
+cdf_int = [0, 21845, -21845, 0]
+
+# C++
+uint16* cdf_int = [0, 21845, 43690, 0]
+```
+
+Note:
+1. In the python `cdf_int` numbers bigger than `2**16/2` are negative
+2. The final value is actually 0. This is then handled in `torchac.cpp` which
+just assums `cdf[..., -1] == 2**16`, which cannot be represented as a `uint16`.
+
+Fun stuff!
