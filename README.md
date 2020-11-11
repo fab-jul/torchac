@@ -102,15 +102,15 @@ Either normalization gone wrong or you encoded a symbol that is `>Lp`.
 The probabilities are specified as [CDFs](https://en.wikipedia.org/wiki/Cumulative_distribution_function).
 For each possible symbol,
 we need 2 CDF values. This means that if there are `L` possible symbols
-`{0, ..., L-1}`, the CDF must specified the value for `L+1` symbols~
+`{0, ..., L-1}`, the CDF must specified the value for `L+1` symbols.
 
 **Example**:
 ```
 Let's say we have L = 3 possible symbols. We need a CDF with 4 values
-to specify this:
+to specify the symbols distribution:
 
 symbol:        0     1     2
-cdf_val    C_0   C_1   C_2   C_3
+cdf:       C_0   C_1   C_2   C_3
 
 This corresponds to the 3 probabilities
 
