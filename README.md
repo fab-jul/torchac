@@ -1,8 +1,6 @@
 # torchac: Fast Entropy Coding in PyTorch
 
----
-
-## State: Pre-release
+## About
 
 This is a simplified version of the arithmetic coder we used in the 
 neural compression paper "Practical Full Resolution Learned Lossless Image 
@@ -11,6 +9,26 @@ lives in the [L3C-Pytorch repo](https://github.com/fab-jul/L3C-PyTorch).
 In particular, we removed the L3C-specific parts, which relied on CUDA
 compliations and were tricky to get going.
 
+The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
+meaning that we implement _arithmetic coding_.
+While it could be further optimized, it is already much faster than doing the equivalent thing in pure-Python (because of all the
+ bit-shifts etc.). In L3C, Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
+ 
+### What torchac is
+
+- A simple library to encode a stream of symbols into a bitstream given
+  the cumulative distribution of the symbols.
+- The number of possible symbols must be finite.
+
+### What torchac is not
+
+- We do not provide classes to learn or represent probability/cumulative
+  distributions. These have to be provided by you.
+
+---
+---
+
+## **State**: Pre-release
 #### Steps for Release
 
 - [ ] Add a real-world test
@@ -26,13 +44,8 @@ compliations and were tricky to get going.
 - [ ] estimate bitrate from normalized CDF
 
 ---
+---
 
-## About
-
-The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
-meaning that we implement _arithmetic coding_.
-While it could be further optimized, it is already much faster than doing the equivalent thing in pure-Python (because of all the
- bit-shifts etc.). In L3C, Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
  
 ## HowTo
 
@@ -78,8 +91,9 @@ _Upcoming_
 
 ## FAQ
 
-- _Output is not equal to the input_: Either normalization gone wrong or
-specify a symbol that is `>Lp`.
+#### 1. Output is not equal to the input
+
+Either normalization gone wrong or you encoded a symbol that is `>Lp`.
 
 ## Important Implementation Details
 
