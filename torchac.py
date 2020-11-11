@@ -7,7 +7,9 @@ PRECISION = 16
 
 
 # Load on-the-fly with ninja.
-torchac_backend = load(name="torchac", sources=["torchac.cpp"], verbose=True)
+torchac_backend = load(name="torchac_backend", 
+                       sources=["torchac_backend.cpp"],
+                       verbose=True)
 
 
 def encode_float_cdf(cdf_float,
