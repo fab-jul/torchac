@@ -15,8 +15,8 @@ compliations and were tricky to get going.
 
 - [ ] Add a real-world test
 - [ ] Add a How To
-- [ ] Test with newest PyTorch
-- [ ] Document the needed packages / conda
+- [x] Test with newest PyTorch
+- [x] Document the needed packages / conda
 
 #### Nice to have
 
@@ -37,6 +37,38 @@ It is **not optimized**, however, it's much faster than doing the equivalent thi
 ## HowTo
 
 ### Set up conda environment
+
+This library has been tested with **PyTorch 1.7** and **Python 3.8**.
+ Other versions also may work.
+ All you need to run it is an environment with pytorch. If you don't have one,
+ you can make one with `conda`:
+
+```bash
+# We use Python 3.8, other version may be supported.
+conda create --name <YOUR_ENV_NAME> python==3.8
+
+conda activate <YOUR_ENV_NAME>
+
+# Installing pytorch
+Find conda command for your system: https://pytorch.org
+```
+
+To (optionally) test your installation, you need `pytest`:
+
+```bash
+# If you don't have pytest
+pip install pytest
+
+# Run tests
+python -m pytest test.py -s
+```
+
+Output should end in something like:
+```bash
+===== 5 passed, 2 warnings in 0.95s =========
+```
+
+### Example
 
 _Upcoming_
 
