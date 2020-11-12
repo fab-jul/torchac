@@ -25,27 +25,6 @@ While it could be further optimized, it is already much faster than doing the eq
 - We do not provide classes to learn or represent probability/cumulative
   distributions. These have to be provided by you.
 
----
----
-
-## **State**: Pre-release
-#### Steps for Release
-
-- [ ] Add a real-world test
-- [ ] Add a How To
-- [x] Test with newest PyTorch
-- [x] Document the needed packages / conda
-
-#### Nice to have
-
-- [ ] Docker container with all dependencies
-- [ ] pip package 
-- [ ] link to here from L3C
-- [ ] estimate bitrate from normalized CDF
-
----
----
-
  
 ## HowTo
 
