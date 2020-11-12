@@ -278,7 +278,7 @@ torch::Tensor decode(
     uint32_t high = 0xFFFFFFFFU;
     uint32_t value = 0;
     const uint32_t c_count = 0x10000U;
-    const int precision = 16;  // TODO: unify with torchac_kernel.cu
+    const int precision = 16;
 
     InCacheString in_cache(in);
     in_cache.initialize(value);
