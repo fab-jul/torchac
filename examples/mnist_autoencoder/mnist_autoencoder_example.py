@@ -1,6 +1,10 @@
 import dataclasses
 import itertools
+import warnings
+
 import torchac
+import os
+import time
 
 import torch
 from torch import nn
@@ -12,7 +16,16 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
-matplotlib.use("TkAgg")
+try:
+  matplotlib.use("TkAgg")
+  interactive_plots_available = True
+except ImportError:
+  warnings.warn(f'*** TkAgg not available! Saving plots...')
+  matplotlib.use("Agg")
+  interactive_plots_available = False
+
+
+# Set seed.
 torch.manual_seed(0)
 
 
@@ -22,6 +35,7 @@ def train_test_loop(bottleneck_size=2,
                     lr=1e-2,
                     rate_loss_enable_itr=500,
                     num_test_batches=10,
+                    train_plot_every_itr=50,
                     mnist_download_dir='data',
                     ):
   """Train and test an autoencoder.
@@ -32,6 +46,7 @@ def train_test_loop(bottleneck_size=2,
   :param lr: Learning rate of Adam.
   :param rate_loss_enable_itr: Iteration when the rate loss is enabled.
   :param num_test_batches: Number of batches we test on (randomly chosen).
+  :param train_plot_every_itr: How often to update the train plot.
   :param mnist_download_dir: Where to store MNIST.
   """
   ae = Autoencoder(bottleneck_size, L)
@@ -82,7 +97,7 @@ def train_test_loop(bottleneck_size=2,
     adam.step()
 
     # Update Train Plot.
-    if i > 0 and i % 10 == 0:
+    if i > 0 and i % train_plot_every_itr == 0:
       train_acc.append(i, bits_estimated, bits_real, mse_loss)
       print(f'{i: 10d}; '
             f'loss={loss:.3f}, '
@@ -305,11 +320,15 @@ class Accumulator:
 class Plotter(object):
   def __init__(self):
     plt.ion()
-    f, axs = plt.subplots(ncols=4, nrows=4, figsize=(12, 8))
+    self.fig, axs = plt.subplots(ncols=4, nrows=4, figsize=(12, 8))
     Plotter._setup_axes(axs[:, :2], 'Train')
     Plotter._setup_axes(axs[:, 2:], 'Test')
     plt.tight_layout()
-    plt.draw()
+    if interactive_plots_available:
+      plt.draw()
+    else:
+      self.out_dir = 'plots'
+      os.makedirs(self.out_dir, exist_ok=True)
     self.axs = axs
 
   @staticmethod
@@ -365,7 +384,14 @@ class Plotter(object):
     axs[3, 1].plot(
       acc.iterations, acc.get_errors(), color)
 
-    plt.pause(0.05)
+    if interactive_plots_available:
+      plt.pause(0.05)
+    else:
+      unique = str(time.time()).replace('.', '_')
+      plotname = f'{unique}_{acc.iterations[-1]:010d}.png'
+      out_p = os.path.join(self.out_dir, plotname)
+      print(f'Saving plot at {out_p}...')
+      self.fig.savefig(out_p)
 
 
 if __name__ == '__main__':
