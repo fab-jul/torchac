@@ -2,7 +2,6 @@ import dataclasses
 import itertools
 import warnings
 
-import torchac
 import os
 import time
 
@@ -15,14 +14,29 @@ import torchvision
 import matplotlib.pyplot as plt
 import matplotlib
 
-
 try:
-  matplotlib.use("TkAgg")
-  interactive_plots_available = True
+  import torchac
 except ImportError:
-  warnings.warn(f'*** TkAgg not available! Saving plots...')
-  matplotlib.use("Agg")
+  raise ImportError('torchac is not available! Please see the main README '
+                    'on how to install it.')
+
+
+# Interactive plots setup
+_FORCE_NO_INTERACTIVE_PLOTS = int(os.environ.get('NO_INTERACTIVE', 0)) == 1
+
+
+if not _FORCE_NO_INTERACTIVE_PLOTS:
+  try:
+    matplotlib.use("TkAgg")
+    interactive_plots_available = True
+  except ImportError:
+    warnings.warn(f'*** TkAgg not available! Saving plots...')
+    interactive_plots_available = False
+else:
   interactive_plots_available = False
+
+if not interactive_plots_available:
+  matplotlib.use("Agg")
 
 
 # Set seed.
@@ -327,7 +341,8 @@ class Plotter(object):
     if interactive_plots_available:
       plt.draw()
     else:
-      self.out_dir = 'plots'
+      unique_id = str(time.time()).replace('.', '_')
+      self.out_dir = os.path.join('plots', unique_id)
       os.makedirs(self.out_dir, exist_ok=True)
     self.axs = axs
 
@@ -387,8 +402,7 @@ class Plotter(object):
     if interactive_plots_available:
       plt.pause(0.05)
     else:
-      unique = str(time.time()).replace('.', '_')
-      plotname = f'{unique}_{acc.iterations[-1]:010d}.png'
+      plotname = f'{acc.iterations[-1]:010d}.png'
       out_p = os.path.join(self.out_dir, plotname)
       print(f'Saving plot at {out_p}...')
       self.fig.savefig(out_p)
