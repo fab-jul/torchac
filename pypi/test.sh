@@ -15,7 +15,7 @@ conda create -n torchac_test pip python==3.8 -y
 conda activate torchac_test
 conda install pytorch torchvision -c pytorch -y
 pip install pytest
-pip install torchac
+pip install --upgrade torchac --no-cache-dir
 python -c "import torchac"
 python -m pytest $TESTS_PATH -s
 
