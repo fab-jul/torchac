@@ -9,6 +9,15 @@ if [[ -z $VERSION_NUMBER ]]; then
   exit 1
 fi
 
+if [ -z "$(git status --porcelain)" ]; then
+  echo "Git clean"
+else
+  echo "Git not clean, please commit"
+  exit 1
+fi
+
+exit 0
+
 python bin/update_version.py $VERSION_NUMBER
 
 rm -rf dist/
