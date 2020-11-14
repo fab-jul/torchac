@@ -2,6 +2,8 @@
 
 <div align="center">
   <img src='progress_plot.png' width="100%"/>
+  <p><emph>Output of the example script. First two columns show training
+  set, second two columns show testing set.</emph></p>
 </div>
 
 This example shows how to train a simple auto-encoder for MNIST,
