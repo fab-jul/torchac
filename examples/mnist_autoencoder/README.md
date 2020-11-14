@@ -31,7 +31,13 @@ non-interactive, you can set `export NO_INTERACTIVE=1` before
 running the script.
 
 ```bash
-pip install matplotlib  # If not installed already
+# If not installed already:
+pip install matplotlib
+pip install torchac
+
+# Got to this folder
 cd examples/mnist_qutoencder
+
+# Run the script
 python mnist_autoencoder_example.py
 ```
