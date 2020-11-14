@@ -1,3 +1,4 @@
+import os
 import torch
 import numpy as np
 from torch.utils.cpp_extension import load
@@ -7,9 +8,12 @@ PRECISION = 16
 
 
 # Load on-the-fly with ninja.
-torchac_backend = load(name="torchac_backend", 
-                       sources=["torchac_backend.cpp"],
-                       verbose=True)
+torchac_dir = os.path.dirname(os.path.realpath(__file__))
+backend_dir = os.path.join(torchac_dir, 'backend')
+torchac_backend = load(
+  name="torchac_backend",
+  sources=[os.path.join(backend_dir, "torchac_backend.cpp")],
+  verbose=True)
 
 
 def encode_float_cdf(cdf_float,

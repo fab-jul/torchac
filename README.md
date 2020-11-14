@@ -1,4 +1,4 @@
-# torchac: Fast Entropy Coding in PyTorch
+# torchac: Fast Arithmetic Coding for PyTorch
 
 ## About
 
@@ -34,8 +34,14 @@ This library has been tested with
 - PyTorch 1.7
 - Python 3.8
 
-And that's all you need. Other versions also may work.
-If you don't have an environment setup, you can make one with `conda`:
+And that's all you need. Other versions also may work. Then, just
+install `torchac` with `pip`:
+
+```bash
+pip install torchac
+```
+
+If you don't have an environment already set up, you can make one with `conda`:
 
 ```bash
 # We use Python 3.8, other version may be supported.
