@@ -24,5 +24,7 @@ python bin/update_version.py $VERSION_NUMBER --set-used
 
 bash pypi/test.sh tests/test.py
 
+git commit bin/version.json -m "Updated Version: $VERSION_NUMBER"
 git tag $VERSION_NUMBER
+git push
 git push --tags

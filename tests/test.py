@@ -1,6 +1,6 @@
 import pytest
 import torch
-import torchac
+from torchac import torchac
 
 
 def test_out_of_range_symbol():
