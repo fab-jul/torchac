@@ -66,7 +66,13 @@ Output should end in something like:
 
 ### Example
 
-_Upcoming_
+The `examples/` folder contains [an example for training an auto-encoder on MNIST](https://github.com/fab-jul/torchac/tree/master/examples/mnist_autoencoder).
+
+<div align="center">
+  <img src='examples/mnist_autoencoder/progress_plot.png' width="50%"/>
+  <p><em>Output of the example script. First two columns show training
+  set, second two columns show testing set.</em></p>
+</div>
 
 ## FAQ
 
