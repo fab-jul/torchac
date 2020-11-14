@@ -14,8 +14,6 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
-exit 0
-
 python bin/update_version.py $VERSION_NUMBER
 
 rm -rf dist/
