@@ -1,5 +1,9 @@
 # torchac: Fast Arithmetic Coding for PyTorch
 
+<div>
+  <img src='data/logo.png' width="20%"/><span>Test</span>
+</div>
+
 ## About
 
 This is a simplified version of the arithmetic coder we used in the 
