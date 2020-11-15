@@ -1,17 +1,5 @@
 /**
- * COPYRIGHT 2019 ETH Zurich
- *
- * LINUX:
-
- - GPU: nvcc 9 and gcc 5.5 works
- - without: ???
-
- *
- * MACOS:
- *
- * CC=clang++ -std=libc++
- * MACOSX_DEPLOYMENT_TARGET=10.14
- *
+ * COPYRIGHT 2020 ETH Zurich
  * BASED on
  *
  * https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html
@@ -86,7 +74,7 @@ public:
     explicit InCacheString(const std::string& in) : in_(in) {};
 
     uint8_t cache=0;
-    uint8_t cached_bits=0;  // num
+    uint8_t cached_bits=0;
     size_t in_ptr=0;
 
     void get(uint32_t& value) {
@@ -169,7 +157,7 @@ py::bytes encode(
         // For which we hardcode the maxvalue. So if e.g.
         // L == 4, it means that Lp == 5, and the allowed symbols are
         // {0, 1, 2, 3}. The max symbol is thus Lp - 2 == 3. It's probability
-        // is then given by c_max -
+        // is then given by c_max - cdf[-2].
         const uint32_t c_high = sym_i == max_symbol ? 0x10000U : cdf[offset + sym_i + 1];
 
         high = (low - 1) + ((span * static_cast<uint64_t>(c_high)) >> precision);
@@ -230,7 +218,6 @@ py::bytes encode_cdf(
 }
 
 
-
 //------------------------------------------------------------------------------
 
 
@@ -241,7 +228,8 @@ cdf_t binsearch(const cdf_t* cdf, cdf_t target, cdf_t max_sym,
     cdf_t right = max_sym + 1;  // len(cdf) == max_sym + 2
 
     while (left + 1 < right) {  // ?
-        // left and right will be < 0x10000 in practice, so left+right fits in uint16_t...
+        // Left and right will be < 0x10000 in practice,
+        // so left+right fits in uint16_t.
         const auto m = static_cast<const cdf_t>((left + right) / 2);
         const auto v = cdf[offset + m];
         if (v < target) {
@@ -266,7 +254,7 @@ torch::Tensor decode(
 #endif
 
     const cdf_t* cdf = cdf_ptr.data;
-    const int N_sym = cdf_ptr.N_sym;  // To know the # of syms to decode. is encoded in file!
+    const int N_sym = cdf_ptr.N_sym;  // To know the # of syms to decode. Is encoded in the stream!
     const int Lp = cdf_ptr.Lp;  // To calculate offset
     const int max_symbol = Lp - 2;
 
