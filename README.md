@@ -9,7 +9,7 @@
 
 This is a stand-alone version of the arithmetic coder we used in the 
 neural compression paper [Practical Full Resolution Learned Lossless Image 
-Compression](https://github.com/fab-jul/L3C-PyTorch).
+Compression](https://github.com/fab-jul/L3C-PyTorch) by Mentzer et al.
 
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
