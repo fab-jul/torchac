@@ -199,3 +199,15 @@ Note:
 just assums `cdf[..., -1] == 2**16`, which cannot be represented as a `uint16`.
 
 Fun stuff!
+
+## Citation
+
+If you use the work released here for your research, consider citing this paper:
+```
+@inproceedings{mentzer2019practical,
+    Author = {Mentzer, Fabian and Agustsson, Eirikur and Tschannen, Michael and Timofte, Radu and Van Gool, Luc},
+    Booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+    Title = {Practical Full Resolution Learned Lossless Image Compression},
+    Year = {2019}}
+```
+
