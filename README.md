@@ -14,13 +14,13 @@ Compression](https://github.com/fab-jul/L3C-PyTorch).
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
 While it could be further optimized, it is already much faster than doing the equivalent thing in pure-Python (because of all the
- bit-shifts etc.). In L3C, Encoding an entire `512 x 512` image happens in 0.202s (see Appendix A in the paper).
+ bit-shifts etc.). In L3C, Encoding all pixels of a `512 x 512` image happens in 0.202s (see Appendix A in the paper).
  
 ### What torchac is
 
-- A simple library to encode a stream of symbols into a bitstream given
-  the cumulative distribution of the symbols.
-- The number of possible symbols must be finite.
+- A simple-to-use library to encode a stream of symbols into a bitstream given
+  the cumulative distribution (CDF) of the symbols.
+The number of possible symbols must be finite.
 
 ### What torchac is not
 
