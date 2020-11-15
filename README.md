@@ -7,12 +7,9 @@
 
 ## About
 
-This is a simplified version of the arithmetic coder we used in the 
-neural compression paper "Practical Full Resolution Learned Lossless Image 
-Compression", which
-lives in the [L3C-Pytorch repo](https://github.com/fab-jul/L3C-PyTorch).
-In particular, we removed the L3C-specific parts, which relied on CUDA
-compliations and were tricky to get going.
+This is a stand-alone version of the arithmetic coder we used in the 
+neural compression paper [Practical Full Resolution Learned Lossless Image 
+Compression](https://github.com/fab-jul/L3C-PyTorch).
 
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
