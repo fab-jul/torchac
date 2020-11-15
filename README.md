@@ -1,8 +1,9 @@
-# torchac: Fast Arithmetic Coding for PyTorch
-
-<div>
-  <img src='data/logo.png' width="20%"/><span>Test</span>
+<div align="center">
+<img src='logo/logo.png' width="50pt"/>
 </div>
+
+
+# torchac: Fast Arithmetic Coding for PyTorch
 
 ## About
 
