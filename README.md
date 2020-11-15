@@ -82,6 +82,34 @@ The `examples/` folder contains [an example for training an auto-encoder on MNIS
   set, second two columns show testing set.</em></p>
 </div>
 
+Snipped from that example:
+
+```python
+import torchac
+
+# Encode to bytestream.
+output_cdf = ...  # Get CDF from your model, shape B, C, H, W, Lp
+sym = ...  # Get the symbols to encode, shape B, C, H, W.
+byte_stream = torchac.encode_float_cdf(output_cdf, sym, check_input_bounds=True)
+
+# Number of bits taken by the stream
+real_bits = len(byte_stream) * 8
+
+# Write to a file.
+with open('outfile.b', 'wb') as fout:
+    fout.write(byte_stream)
+
+# Read from a file.
+with open('outfile.b', 'rb') as fin:
+    byte_stream = fin.read()
+
+# Decode from bytestream.
+sym_out = torchac.decode_float_cdf(output_cdf, byte_stream)
+
+# Output will be equal to the input.
+assert sym_out.equal(sym)
+```
+
 ## FAQ
 
 #### 1. Output is not equal to the input

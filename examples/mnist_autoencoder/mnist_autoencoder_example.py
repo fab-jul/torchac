@@ -21,6 +21,10 @@ except ImportError:
                     'on how to install it.')
 
 
+# Set to true to write to disk.
+_WRITE_BITS = False
+
+
 # Interactive plots setup
 _FORCE_NO_INTERACTIVE_PLOTS = int(os.environ.get('NO_INTERACTIVE', 0)) == 1
 
@@ -285,6 +289,13 @@ class ConditionalProbabilityModel(nn.Module):
     sym = sym.to(torch.int16)
     byte_stream = torchac.encode_float_cdf(output_cdf, sym, check_input_bounds=True)
     real_bits = len(byte_stream) * 8
+    if _WRITE_BITS:
+      # Write to a file.
+      with open('outfile.b', 'wb') as fout:
+        fout.write(byte_stream)
+      # Read from a file.
+      with open('outfile.b', 'rb') as fin:
+        byte_stream = fin.read()
     assert torchac.decode_float_cdf(output_cdf, byte_stream).equal(sym)
     return estimated_bits, real_bits
 
