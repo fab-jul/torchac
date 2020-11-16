@@ -46,34 +46,12 @@ install `torchac` with `pip`:
 pip install torchac
 ```
 
-If you don't have an environment already set up, you can make one with `conda`:
+If you don't have an environment already set up, you can make one with `conda`,
+see [pytorch.org](https://pytorch.org).
 
-```bash
-# We use Python 3.8, other version may be supported.
-conda create --name <YOUR_ENV_NAME> python==3.8
-
-conda activate <YOUR_ENV_NAME>
-
-# Installing pytorch
-Find conda command for your system: https://pytorch.org
-```
-
-#### Test installation
-
-To (optionally) test your installation, you need `pytest`:
-
-```bash
-# If you don't have pytest
-pip install pytest
-
-# Run tests
-python -m pytest test.py -s
-```
-
-Output should end in something like:
-```bash
-===== 5 passed, 2 warnings in 0.95s =========
-```
+To (optionally) test your installation, you need `pytest`, and then you
+can run `python -m pytest tests/test.py -s`. The output should contain
+`5 passed, 2 warnings`.
 
 ### Example
 
@@ -117,7 +95,8 @@ assert sym_out.equal(sym)
 
 #### 1. Output is not equal to the input
 
-Either normalization gone wrong or you encoded a symbol that is `>Lp`.
+Either normalization went wrong or you encoded a symbol that is `>Lp`,
+see below for more details.
 
 ## Important Implementation Details
 
@@ -184,7 +163,7 @@ is strictly monotonically increasing in `float32` space, but not when
 it is converted to 16 bit precision. An "unnormalized" CDF is what we call
 a CDF that has the same value for at least two subsequent elements.
 - "floating point" CDFs are CDFs that are specified as `float32` and need
-to be converted to 16 bit precision
+to be converted to 16 bit precision.
 - "integer" CDFs are CDFs specified as `int16` - BUT are then interpreted
 as `uint16` on the C++ side. See "int16 vs uint16" below.
 
