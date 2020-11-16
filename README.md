@@ -17,7 +17,7 @@ on-the-fly compilation with ninja, the integration is seamless.
 The implementation is based on [this blog post](https://marknelson.us/posts/2014/10/19/data-compression-with-arithmetic-coding.html),
 meaning that we implement _arithmetic coding_.
 While it could be further optimized, it is already much faster than doing the equivalent thing in pure-Python (because of all the
- bit-shifts etc.). In L3C, Encoding all pixels of a `512 x 512` image happens in 0.202s (see Appendix A in the paper).
+ bit-shifts etc.). In L3C, Encoding all pixels of a `512 x 512` image happens in 0.202s (see [Appendix A](https://arxiv.org/abs/1811.12817) in the paper).
  
 ### What torchac is
 
