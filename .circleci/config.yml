@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout
+      - run:
+          command: |
+            python3 -m venv env_torchac
+            . env_torchac/bin/activate
+            pip3 install --upgrade pip
+            pip3 install torch pytest ninja
+            echo "export PYTHONPATH=.:$PYTHONPATH" >> $BASH_ENV
+          name: Setup
+      - run:
+          command: |
+            . env_torchac/bin/activate
+            CUDA_VISIBLE_DEVICES="" python3 -m pytest tests/test.py -s
+            
+
+workflows:
+  main:
+    jobs:
+      - build-and-test

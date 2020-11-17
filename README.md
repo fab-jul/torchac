@@ -5,6 +5,13 @@
 
 # torchac: Fast Arithmetic Coding for PyTorch
 
+[![TestStatus](https://circleci.com/gh/fab-jul/torchac.svg?style=shield)](https://circleci.com/gh/fab-jul/torchac)
+[![PyPiVersion](https://badge.fury.io/py/torchac.svg)](https://pypi.org/project/torchac/)
+![PythonVersion](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)
+[![Downloads](https://pepy.tech/badge/torchac)](https://pepy.tech/project/torchac)
+![License](https://img.shields.io/pypi/l/torchac)
+
+
 ## About
 
 This is a stand-alone version of the arithmetic coder we used in the 
