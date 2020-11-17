@@ -23,7 +23,7 @@ twine upload dist/*
 python bin/update_version.py $VERSION_NUMBER --set-used
 
 echo "Waiting for changes to propagate..."
-sleep 30  # Give PyPi time to prepare the package.
+sleep 60  # Give PyPi time to prepare the package.
 
 bash pypi/test.sh tests/test.py
 
