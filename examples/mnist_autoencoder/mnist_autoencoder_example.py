@@ -69,6 +69,11 @@ def train_test_loop(bottleneck_size=2,
   """
   ae = Autoencoder(bottleneck_size, L)
   prob = ConditionalProbabilityModel(L=L, bottleneck_shape=ae.bottleneck_shape)
+
+  device = 'cuda'
+  ae = ae.to(device)
+  prob = prob.to(device)
+
   mse = nn.MSELoss()
   adam = torch.optim.Adam(
     itertools.chain(ae.parameters(), prob.parameters()),
@@ -93,6 +98,7 @@ def train_test_loop(bottleneck_size=2,
   rate_loss_enabled = False
   for i, (images, labels) in enumerate(train_loader):
     assert images.shape[-2:] == (32, 32)
+    images = images.to(device)
 
     adam.zero_grad()
 
@@ -138,6 +144,7 @@ def train_test_loop(bottleneck_size=2,
         for j, (test_images, test_labels) in enumerate(test_loader):
           if j >= num_test_batches:
             break
+          test_images = test_images.to(device)
           test_reconstructions, test_sym = ae(test_images)
           test_bits_estimated, test_bits_real = prob(test_sym, test_labels)
           test_mse_loss = mse(test_reconstructions, test_images)
