@@ -7,10 +7,11 @@
 
 [![TestStatus](https://circleci.com/gh/fab-jul/torchac.svg?style=shield)](https://circleci.com/gh/fab-jul/torchac)
 [![PyPiVersion](https://badge.fury.io/py/torchac.svg)](https://pypi.org/project/torchac/)
-![PythonVersion](https://img.shields.io/badge/python-%3E%3D3.8-brightgreen)
-<!--[![Downloads](https://pepy.tech/badge/torchac)](https://pepy.tech/project/torchac)-->
+![PythonVersion](https://img.shields.io/badge/Python-%3E%3D3.8-brightgreen)
+![PyTorchVersions](https://img.shields.io/badge/PyTorch-1.5%7C1.6%7C1.7-brightgreen)
 ![License](https://img.shields.io/pypi/l/torchac)
 
+<!--[![Downloads](https://pepy.tech/badge/torchac)](https://pepy.tech/project/torchac)-->
 
 ## About
 
