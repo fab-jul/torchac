@@ -35,4 +35,5 @@ setuptools.setup(
   long_description=_get_long_description(),
   long_description_content_type='text/markdown',
   python_requires='>=3.6',
+  license='GNU General Public License',
   url='https://github.com/fab-jul/torchac')
