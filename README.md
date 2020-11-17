@@ -36,7 +36,7 @@ The number of possible symbols must be finite.
 ### Set up conda environment
 
 This library has been tested with
-- PyTorch 1.7
+- PyTorch 1.5, 1.6, 1.7
 - Python 3.8
 
 And that's all you need. Other versions of Python may also work,
