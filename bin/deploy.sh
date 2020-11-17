@@ -22,6 +22,9 @@ twine upload dist/*
 
 python bin/update_version.py $VERSION_NUMBER --set-used
 
+echo "Waiting for changes to propagate..."
+sleep 30  # Give PyPi time to prepare the package.
+
 bash pypi/test.sh tests/test.py
 
 git commit bin/version.json -m "Updated Version: $VERSION_NUMBER"
