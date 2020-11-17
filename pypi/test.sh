@@ -4,16 +4,23 @@
 #
 
 TESTS_PATH=$1
+PYTORCH_VERSION=$2
 
 if [[ -z $TESTS_PATH ]]; then
     echo "Usage: $0 TESTS_PATH"
     exit 1
 fi
 
+if [[ -z $PYTORCH_VERSION ]]; then
+  PYTORCH="pytorch"  # Use latest
+else
+  PYTORCH="pytorch==$PYTORCH_VERSION"  # Use latest
+fi
+
 source /Users/fabian/Documents/miniconda3/etc/profile.d/conda.sh
 conda create -n torchac_test pip python==3.8 -y
 conda activate torchac_test
-conda install pytorch torchvision -c pytorch -y
+conda install $PYTORCH torchvision -c pytorch -y
 pip install pytest
 pip install --upgrade torchac --no-cache-dir
 python -c "import torchac"

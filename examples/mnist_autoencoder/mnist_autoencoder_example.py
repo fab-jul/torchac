@@ -1,3 +1,4 @@
+import argparse
 import dataclasses
 import itertools
 import warnings
@@ -55,6 +56,7 @@ def train_test_loop(use_gpu=True,
                     rate_loss_enable_itr=500,
                     num_test_batches=10,
                     train_plot_every_itr=50,
+                    max_training_itr=None,
                     mnist_download_dir='data',
                     ):
   """Train and test an autoencoder.
@@ -67,12 +69,13 @@ def train_test_loop(use_gpu=True,
   :param rate_loss_enable_itr: Iteration when the rate loss is enabled.
   :param num_test_batches: Number of batches we test on (randomly chosen).
   :param train_plot_every_itr: How often to update the train plot.
+  :param max_training_itr: If given, only train for max_training_itr iterations.
   :param mnist_download_dir: Where to store MNIST.
   """
   ae = Autoencoder(bottleneck_size, L)
   prob = ConditionalProbabilityModel(L=L, bottleneck_shape=ae.bottleneck_shape)
 
-  device = 'cuda'
+  device = 'cuda' if (use_gpu and torch.cuda.is_available()) else 'cpu'
   ae = ae.to(device)
   prob = prob.to(device)
 
@@ -99,6 +102,8 @@ def train_test_loop(use_gpu=True,
 
   rate_loss_enabled = False
   for i, (images, labels) in enumerate(train_loader):
+    if max_training_itr and i >= max_training_itr:
+      break
     assert images.shape[-2:] == (32, 32)
     images = images.to(device)
     labels = labels.to(device)
@@ -437,5 +442,12 @@ class Plotter(object):
       self.fig.savefig(out_p)
 
 
+def main():
+  p = argparse.ArgumentParser()
+  p.add_argument('--max_training_itr', type=int)
+  flags = p.parse_args()
+  train_test_loop(max_training_itr=flags.max_training_itr)
+
+
 if __name__ == '__main__':
-  train_test_loop()
+  main()
