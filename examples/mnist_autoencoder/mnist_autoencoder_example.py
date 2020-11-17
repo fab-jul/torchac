@@ -47,7 +47,8 @@ if not interactive_plots_available:
 torch.manual_seed(0)
 
 
-def train_test_loop(bottleneck_size=2,
+def train_test_loop(use_gpu=True,
+                    bottleneck_size=2,
                     L=5,
                     batch_size=8,
                     lr=1e-2,
@@ -58,6 +59,7 @@ def train_test_loop(bottleneck_size=2,
                     ):
   """Train and test an autoencoder.
 
+  :param use_gpu: Whether to use the GPU, if it is available.
   :param bottleneck_size: Number of channels in the bottleneck.
   :param L: Number of levels that we quantize to.
   :param batch_size: Batch size we train with.
@@ -99,6 +101,7 @@ def train_test_loop(bottleneck_size=2,
   for i, (images, labels) in enumerate(train_loader):
     assert images.shape[-2:] == (32, 32)
     images = images.to(device)
+    labels = labels.to(device)
 
     adam.zero_grad()
 
@@ -145,6 +148,7 @@ def train_test_loop(bottleneck_size=2,
           if j >= num_test_batches:
             break
           test_images = test_images.to(device)
+          test_labels = test_labels.to(device)
           test_reconstructions, test_sym = ae(test_images)
           test_bits_estimated, test_bits_real = prob(test_sym, test_labels)
           test_mse_loss = mse(test_reconstructions, test_images)
@@ -267,7 +271,7 @@ class ConditionalProbabilityModel(nn.Module):
     # at each spatial location.
     bottleneck_shape_with_batch_dim = (batch_size, 1, H, W)
     static_input = torch.ones(
-      bottleneck_shape_with_batch_dim, dtype=torch.float32)
+      bottleneck_shape_with_batch_dim, dtype=torch.float32, device=sym.device)
     dynamic_input = static_input * labels.reshape(-1, 1, 1, 1)
     # Divide by 9 and substract 0.5 to center the input around 0 and make
     # it be contained in [-0.5, 0.5].
@@ -292,8 +296,12 @@ class ConditionalProbabilityModel(nn.Module):
     estimated_bits = estimate_bitrate_from_pmf(output_probabilities, sym=sym)
     # Convert to a torchac-compatible CDF.
     output_cdf = pmf_to_cdf(output_probabilities)
-    # Get real bitrate from the byte_stream.
+    # torchac expects sym as int16, see README for details.
     sym = sym.to(torch.int16)
+    # torchac expects CDF and sym on CPU.
+    output_cdf = output_cdf.detach().cpu()
+    sym = sym.detach().cpu()
+    # Get real bitrate from the byte_stream.
     byte_stream = torchac.encode_float_cdf(output_cdf, sym, check_input_bounds=True)
     real_bits = len(byte_stream) * 8
     if _WRITE_BITS:
@@ -312,6 +320,9 @@ def pmf_to_cdf(pmf):
   spatial_dimensions = pmf.shape[:-1] + (1,)
   zeros = torch.zeros(spatial_dimensions, dtype=pmf.dtype, device=pmf.device)
   cdf_with_0 = torch.cat([zeros, cdf], dim=-1)
+  # On GPU, softmax followed by cumsum can lead to the final value being 
+  # slightly bigger than 1, so we clamp.
+  cdf_with_0 = cdf_with_0.clamp(max=1.)
   return cdf_with_0
 
 
@@ -389,10 +400,10 @@ class Plotter(object):
     title = mode
 
     # Plot images.
-    axs[0, 0].imshow(images[0, ...].squeeze())
-    axs[0, 1].imshow(reconstructions[0, ...].squeeze().detach().numpy())
-    axs[1, 0].imshow(sym[0, 0, ...].to(torch.float).detach().numpy())
-    axs[1, 1].imshow(sym[0, 1, ...].to(torch.float).detach().numpy())
+    axs[0, 0].imshow(images[0, ...].squeeze().detach().cpu().numpy())
+    axs[0, 1].imshow(reconstructions[0, ...].squeeze().detach().cpu().numpy())
+    axs[1, 0].imshow(sym[0, 0, ...].to(torch.float).detach().cpu().numpy())
+    axs[1, 1].imshow(sym[0, 1, ...].to(torch.float).detach().cpu().numpy())
 
     # Plot lines, make sure to empty plot first.
     axs[2, 0].clear()
