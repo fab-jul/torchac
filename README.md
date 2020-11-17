@@ -39,8 +39,10 @@ This library has been tested with
 - PyTorch 1.7
 - Python 3.8
 
-And that's all you need. Other versions also may work. Then, just
-install `torchac` with `pip`:
+And that's all you need. Other versions of Python may also work,
+but on-the-fly ninja compilation only works for PyTorch 1.5+.
+
+In a supported environment, install `torchac` with `pip`:
 
 ```bash
 pip install torchac
