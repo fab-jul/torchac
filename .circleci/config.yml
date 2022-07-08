@@ -17,7 +17,7 @@ jobs:
             python3 -m venv env_torchac
             . env_torchac/bin/activate
             pip3 install --upgrade pip
-            pip3 install torch pytest ninja
+            pip3 install numpy torch pytest ninja
             echo "export PYTHONPATH=.:$PYTHONPATH" >> $BASH_ENV
           name: Setup
       - run:
