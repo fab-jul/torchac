@@ -44,10 +44,10 @@ The number of possible symbols must be finite.
 ### Set up conda environment
 
 This library has been tested with
-- PyTorch 1.5, 1.6, 1.7
-- Python 3.8
+- PyTorch 1.5 - 1.12
+- Python 3.8, 3.9
 
-And that's all you need. Other versions of Python may also work,
+Other versions of Python may also work,
 but on-the-fly ninja compilation only works for PyTorch 1.5+.
 
 In a supported environment, install `torchac` with `pip`:
@@ -59,9 +59,10 @@ pip install torchac
 If you don't have an environment already set up, you can make one with `conda`,
 see [pytorch.org](https://pytorch.org).
 
-To (optionally) test your installation, you need `pytest`, and then you
-can run `python -m pytest tests/test.py -s`. The output should contain
-`5 passed, 2 warnings`.
+#### Testing installation
+
+To test the installation, `git clone` this repo and run `bash
+install_and_run_test.sh`. It should end in a line that says that `5 passed`.
 
 ### Example
 
