@@ -22,6 +22,7 @@ jobs:
       - run:
           command: |
             . env_torchac/bin/activate
+            ls -al
             CUDA_VISIBLE_DEVICES="" python3 -m pytest tests/test.py -s
             
 
