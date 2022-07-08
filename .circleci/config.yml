@@ -11,6 +11,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "SHA256:+8f0fEsj1+0ZW5VftgZdhan1iKLM7Vfj55KujJRMXjk"
+      - checkout
       - run:
           command: |
             python3 -m venv env_torchac
