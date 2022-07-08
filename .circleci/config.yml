@@ -8,7 +8,9 @@ jobs:
     docker:
       - image: circleci/python:3.8
     steps:
-      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:+8f0fEsj1+0ZW5VftgZdhan1iKLM7Vfj55KujJRMXjk"
       - run:
           command: |
             python3 -m venv env_torchac
